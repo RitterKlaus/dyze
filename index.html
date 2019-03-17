@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="de">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>Würfeln für Mutant Year Zero / Mutant Jahr Null</title>
+  <meta name="description" content="Würfeln für Mutant Year Zero / Mutant Jahr Null / Tales from the Loop / Forbidden Lands">
+  <meta name="author" content="KlausRitter" >
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+    <style>
+      .attribute    { padding: 0 18px; color: black; background-color: yellow; }
+      .skill        { padding: 0 18px; color: white; background-color: green; }
+      .equipment    { padding: 0 18px; color: white; background-color: black; }	  
+    </style>
+
+</head>
+<body onload="init()">
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="container">
+    <div class="row">
+      <div class="twelve columns" style="margin-top: 0%">
+	  
+<div class="twelve columns" id="bereichwuerfelarten">
+
+<div>Eingesetzte Würfel:</div>
+
+<div>
+<button class="attribute" onclick="setzeAttribute(0)">0</button>
+<button class="attribute" onclick="setzeAttribute(1)">1</button>
+<button class="attribute" onclick="setzeAttribute(2)">2</button>
+<button class="attribute" onclick="setzeAttribute(3)">3</button>
+<button class="attribute" onclick="setzeAttribute(4)">4</button>
+<button class="attribute" onclick="setzeAttribute(5)">5</button>
+</div>
+<div>
+<button class="skill" onclick="setzeSkill(0)">0</button>
+<button class="skill" onclick="setzeSkill(1)">1</button>
+<button class="skill" onclick="setzeSkill(2)">2</button>
+<button class="skill" onclick="setzeSkill(3)">3</button>
+<button class="skill" onclick="setzeSkill(4)">4</button>
+<button class="skill" onclick="setzeSkill(5)">5</button>
+</div>
+<div>
+<button class="equipment" onclick="setzeEquipment(0)">0</button>
+<button class="equipment" onclick="setzeEquipment(1)">1</button>
+<button class="equipment" onclick="setzeEquipment(2)">2</button>
+<button class="equipment" onclick="setzeEquipment(3)">3</button>
+<button class="equipment" onclick="setzeEquipment(4)">4</button>
+<button class="equipment" onclick="setzeEquipment(5)">5</button>
+</div>
+
+<hr />
+
+<div id="pool">Bitte stelle den Würfel-Pool zusammen.</div>
+<div id="interpretation"></div>
+
+<button id="wuerfeln-button" class="button-primary" onclick="wuerfeln()">Würfeln!</button> <button id="push-button" onclick="pushen()">Push!</button>
+</div>
+
+<div style="text-align: right;"><a href="/impressum/" target="_blank">Impressum</a> | <a href="/datenschutzerklaerung-2/" target="_blank">Datenschutz</a></div>
+	
+      </div>
+    </div>
+  </div>
+  
+  <!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+<script>
+
+var anzeigefarbeErfolg = "#22DD11";
+var anzeigefarbePatzer = "#FF2211";
+var anzeigefarbeNormal = "#000000";
+
+var CONFIG_DICETYPE = 6;
+
+var CONFIG_ART_ATTRIBUTE = 0;
+var CONFIG_ART_SKILL = 1;
+var CONFIG_ART_EQUIPMENT = 2;
+
+let art = new Array();
+art[0] = 'attribute';
+art[1] = 'skill';
+art[2] = 'equipment';
+
+let farbe = new Array();
+farbe['attribute'] = "yellow";
+farbe['skill'] = "green";
+farbe['equipment'] = "black";
+
+let komplFarbe = new Array();
+komplFarbe['attribute'] = "black";
+komplFarbe['skill'] = "black";
+komplFarbe['equipment'] = "white";
+
+let poolAnzahl = new Array();
+poolAnzahl['attribute'] = 0;
+poolAnzahl['skill'] = 0;
+poolAnzahl['equipment'] = 0;
+
+let poolErgebnis = new Array();
+poolErgebnis['attribute'] = new Array();
+poolErgebnis['skill'] = new Array();
+poolErgebnis['equipment'] = new Array();
+
+function init() {
+
+	document.getElementById("wuerfeln-button").style = "display: block;";
+	document.getElementById("push-button").style = "display: none;";
+}
+
+function wirfEinenWuerfel(dicetype) {
+
+   return Math.floor(Math.random() * dicetype) + 1;
+}
+
+function getWuerfelsymbol(zahl) {
+  // Unicode-Symbole
+  return "&#" + (9855 + zahl);
+}
+
+function getLeererWuerfel() {
+  return "&#11036";
+}
+
+function zeigeWuerfelpool() {
+
+	var id = "pool";
+
+	document.getElementById(id).innerHTML = "";
+
+	for (var j = 0; j < 4; j++) {
+		
+		var aktuelleArt = art[j];
+		var anzahl = poolAnzahl[art[j]];
+		
+		for (var i = 0; i < anzahl; i++) {
+			// document.getElementById(id).innerHTML = document.getElementById(id).innerHTML + " <font size='18' color='"+farbe[aktuelleArt]+"'>" + getLeererWuerfel() + "</font>";
+			/* dadurch hüpfen die Zeilenhöhen:
+			
+			document.getElementById(id).innerHTML = document.getElementById(id).innerHTML + " <font size='18' color='" + komplFarbe[aktuelleArt] + "'><span style='background-color: " + farbe[aktuelleArt] + "'>" + getLeererWuerfel() + "</span></font>";
+			*/
+			
+			document.getElementById(id).innerHTML = document.getElementById(id).innerHTML + " <font size='18' color='" + farbe[aktuelleArt] + "'><span style='background-color: " + farbe[aktuelleArt] + "'>" + getWuerfelsymbol(1) + "</span></font>";
+		}
+	}
+}
+
+function wuerfeln() {
+
+	var id = "pool";
+	
+	var erfolge = 0;
+	var patzer = 0;
+
+	document.getElementById(id).innerHTML = "";
+	
+	for (var j = 0; j < 4; j++) {
+		
+		var aktuelleArt = art[j];
+		var anzahl = poolAnzahl[art[j]];
+		
+		for (var i = 0; i < anzahl; i++) {
+
+			var zahl = wirfEinenWuerfel(CONFIG_DICETYPE);			
+			
+			poolErgebnis[art[j]][i] = zahl;
+			
+			var fontfarbe = komplFarbe[aktuelleArt];
+			
+			if (zahl == 1) {
+				patzer++;
+				fontfarbe = anzeigefarbePatzer;
+			}
+			
+			if (zahl == CONFIG_DICETYPE) {
+				erfolge++;
+				fontfarbe = anzeigefarbeErfolg;
+			}
+			
+			document.getElementById(id).innerHTML = document.getElementById(id).innerHTML + " <font size='18' color='" + fontfarbe + "'><span style='background-color: " + farbe[aktuelleArt] + "'>" + getWuerfelsymbol(zahl) + "</span></font>";
+		}
+	}
+	
+	 document.getElementById('interpretation').innerHTML = " Erfolge: <b>" + erfolge + "</b> Patzer: <i>" + patzer +"</i>";
+	 document.getElementById("push-button").style = "display: block;";
+}
+
+function pushen() {
+
+	var id = "pool";
+	
+	var erfolge = 0;
+	var patzer = 0;
+	var trauma = 0;
+	var equipmentschaden = 0;
+
+	document.getElementById(id).innerHTML = "";
+	
+	for (var j = 0; j < 4; j++) {
+		
+		var aktuelleArt = art[j];
+		var anzahl = poolAnzahl[art[j]];
+		
+		for (var i = 0; i < anzahl; i++) {
+
+			var zahl = poolErgebnis[art[j]][i];
+
+			if (zahl < CONFIG_DICETYPE && zahl > 1 ) {
+				// nochmal würfeln erlaubt
+				// TODO hängt doch von der Art ab?!!!
+				
+				zahl = wirfEinenWuerfel(CONFIG_DICETYPE);
+			}		
+			
+			var fontfarbe = komplFarbe[aktuelleArt];
+			
+			if (zahl == 1) {
+				patzer++;
+			
+				if (j == CONFIG_ART_ATTRIBUTE) {
+					trauma++;
+				}
+				if (j == CONFIG_ART_EQUIPMENT) {
+					equipmentschaden++;
+				}
+				fontfarbe = anzeigefarbePatzer;
+			}
+			
+			if (zahl == CONFIG_DICETYPE) {
+				erfolge++;
+				fontfarbe = anzeigefarbeErfolg;
+			}
+			
+			document.getElementById(id).innerHTML = document.getElementById(id).innerHTML + " <font size='18' color='" + fontfarbe + "'><span style='background-color: " + farbe[aktuelleArt] + "'>" + getWuerfelsymbol(zahl) + "</span></font>";
+		}
+	}
+	
+	document.getElementById('interpretation').innerHTML = " Erfolge: <b>" + erfolge + "</b> Patzer: <i>" + patzer +"</i> Trauma: <b>" + trauma +"</b> Ausrüstungs-Schaden: <b>" + equipmentschaden + "</b>";
+	document.getElementById("push-button").style = "display: none;";
+}
+
+function setzeAnzahl(dieArt, anzahl) {
+
+	poolAnzahl[dieArt] = anzahl;
+	zeigeWuerfelpool()
+};
+
+function setzeAttribute(anzahl) {
+
+	setzeAnzahl('attribute', anzahl);
+};
+
+function setzeSkill(anzahl) {
+
+	setzeAnzahl('skill', anzahl);
+};
+
+function setzeEquipment(anzahl) {
+
+	setzeAnzahl('equipment', anzahl);
+};
+
+</script>
+</body>
+</html>
